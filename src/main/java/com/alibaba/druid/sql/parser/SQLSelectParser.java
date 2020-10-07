@@ -1206,6 +1206,11 @@ public class SQLSelectParser extends SQLParser {
         }
 
         if (joinType != null) {
+            if (lexer.token() == Token.LBRACKET) {
+                lexer.nextToken();
+                lexer.nextToken();
+                lexer.nextToken();
+            }
             SQLJoinTableSource join = new SQLJoinTableSource();
             join.setLeft(tableSource);
             join.setJoinType(joinType);

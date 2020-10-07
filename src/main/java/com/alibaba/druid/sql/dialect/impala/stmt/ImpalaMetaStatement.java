@@ -45,6 +45,7 @@ public class ImpalaMetaStatement extends MySqlStatementImpl {
     }
 
     private SQLExpr computePartition = null;
+    private SQLExpr refreshPartition = null;
 
     private List<SQLExpr> columns = new ArrayList<SQLExpr>();
 
@@ -120,4 +121,11 @@ public class ImpalaMetaStatement extends MySqlStatementImpl {
         this.incremental = incremental;
     }
 
+    public SQLExpr getRefreshPartition() {
+        return refreshPartition;
+    }
+
+    public void setRefreshPartition(SQLExpr refreshPartition) {
+        this.refreshPartition = refreshPartition;
+    }
 }

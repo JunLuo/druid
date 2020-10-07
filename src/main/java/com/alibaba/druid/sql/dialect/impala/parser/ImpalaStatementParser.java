@@ -63,24 +63,9 @@ public class ImpalaStatementParser extends SQLStatementParser {
             accept(Token.REFRESH);
             stmt.setTableSource(this.exprParser.name());
             if (lexer.token() == Token.PARTITION) {
-                lexer.nextToken();
-                accept(Token.LPAREN);
-                for (;;) {
-                    SQLAssignItem ptExpr = new SQLAssignItem();
-                    ptExpr.setTarget(this.exprParser.name());
-                    if (lexer.token() == Token.EQ) {
-                        lexer.nextToken();
-                        SQLExpr ptValue = this.exprParser.expr();
-                        ptExpr.setValue(ptValue);
-                    }
-                    stmt.addPartition(ptExpr);
-                    if (!(lexer.token() == (Token.COMMA))) {
-                        break;
-                    } else {
-                        lexer.nextToken();
-                    }
-                }
-                accept(Token.RPAREN);
+                accept(Token.PARTITION);
+                SQLExpr partition = this.exprParser.expr();
+                stmt.setRefreshPartition(partition);
             }
         } else{
             accept(Token.COMPUTE);
