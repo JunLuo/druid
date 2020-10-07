@@ -232,10 +232,14 @@ public class ImpalaStatementParser extends SQLStatementParser {
             insert.addBeforeComment(lexer.readAndResetComments());
         }
 
-        SQLSelectParser selectParser = createSQLSelectParser();
-
         accept(Token.INSERT);
+        parseInsert0(insert);
+        return insert;
+    }
 
+    @Override
+    protected void parseInsert0(SQLInsertInto insertStatement, boolean acceptSubQuery) {
+        ImpalaInsertStatement insert = (ImpalaInsertStatement) insertStatement;
         if (lexer.token() == Token.INTO) {
             lexer.nextToken();
         } else {
@@ -327,14 +331,34 @@ public class ImpalaStatementParser extends SQLStatementParser {
             lexer.nextTokenLParen();
             parseValueClause(insert.getValuesList(), columnSize, insert);
         } else {
+            SQLSelectParser selectParser = createSQLSelectParser();
             SQLSelect query = selectParser.select();
             insert.setQuery(query);
         }
-
-        return insert;
     }
 
+    @Override
+    public SQLStatement parseWith() {
+        SQLWithSubqueryClause with = this.parseWithQuery();
 
+        if (lexer.token() == Token.SELECT) {
+            SQLSelectParser selectParser = createSQLSelectParser();
+            SQLSelect select = selectParser.select();
+            select.setWithSubQuery(with);
+            return new SQLSelectStatement(select, dbType);
+        }else if (lexer.token() == Token.INSERT) {
+            ImpalaInsertStatement stmt = new ImpalaInsertStatement();
+            stmt.setWith(with);
+            stmt.setDbType(dbType);
+            if (lexer.token() == Token.INSERT) {
+                accept(Token.INSERT);
+            }
+            parseInsert0(stmt);
+            return stmt;
+        }
+
+        throw new ParserException("TODO. " + lexer.info());
+    }
     public SQLStatement parseAlter() {
         ImpalaAlterTableStatement stmt = null;
         accept(Token.ALTER);

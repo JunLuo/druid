@@ -2165,7 +2165,7 @@ public class SQLStatementParser extends SQLParser {
         if (token == Token.TABLE || lexer.identifierEquals("GLOBAL") || lexer.identifierEquals("EXTERNAL")) {
             SQLCreateTableParser createTableParser = getSQLCreateTableParser();
             SQLCreateTableStatement stmt = createTableParser.parseCreateTable(false);
-            
+
             if (comments != null) {
                 stmt.addBeforeComment(comments);
             }
