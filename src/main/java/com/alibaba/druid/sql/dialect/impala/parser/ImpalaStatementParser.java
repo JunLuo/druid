@@ -435,4 +435,23 @@ public class ImpalaStatementParser extends SQLStatementParser {
     protected ImpalaUpdateStatements createUpdateStatement() {
         return new ImpalaUpdateStatements();
     }
+
+    @Override
+    public SQLStatement parseSet() {
+        accept(Token.SET);
+        if (lexer.token() == Token.IDENTIFIER) {
+            SQLSetStatement stmt = new SQLSetStatement(getDbType());
+            SQLExpr expr = new SQLIdentifierExpr(lexer.stringVal());
+            for (; ; ) {
+                lexer.nextToken();
+                if (lexer.token() == Token.EOF) {
+                    break;
+                }
+            }
+            SQLExpr value = new SQLIdentifierExpr("");
+            stmt.set(expr, value);
+            return stmt;
+        }
+        return null;
+    }
 }
