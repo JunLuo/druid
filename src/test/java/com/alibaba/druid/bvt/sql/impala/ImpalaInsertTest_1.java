@@ -31,4 +31,24 @@ public class ImpalaInsertTest_1 extends TestCase {
         assertEquals(1, visitor.getTables().size());
         assertEquals(0, visitor.getColumns().size());
     }
+
+    public void test_upsert() throws Exception {
+        String sql = "UPSERT INTO TABLE `tt`.`articles`\n" +
+                "VALUES ('a''大1大2-- /**fsdaf**/撒发链接a', 'bb', '大大aa-- /**fsdaf**/撒发链接'), ('a''大1大2-- " +
+                "/**fsdaf**/撒发链接a', 'bb', '大大aa-- /**fsdaf**/撒发链接'), ('a''大1大2-- /**fsdaf**/撒发链接a', " +
+                "'bb', '大大aa-- /**fsdaf**/撒发链接');";
+        List<SQLStatement> statementList = SQLUtils.parseStatements(sql, JdbcConstants.IMPALA);
+        SQLStatement stmt = statementList.get(0);
+
+        assertEquals(1, statementList.size());
+
+        SchemaStatVisitor visitor = SQLUtils.createSchemaStatVisitor(JdbcConstants.IMPALA);
+        stmt.accept(visitor);
+
+        System.out.println("Tables : " + visitor.getTables());
+
+        assertEquals(1, visitor.getTables().size());
+        assertEquals(0, visitor.getColumns().size());
+    }
+
 }

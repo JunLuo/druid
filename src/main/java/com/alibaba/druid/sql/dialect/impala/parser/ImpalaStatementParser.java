@@ -236,7 +236,17 @@ public class ImpalaStatementParser extends SQLStatementParser {
         parseInsert0(insert);
         return insert;
     }
+    public SQLStatement parseUpsert() {
+        ImpalaInsertStatement insertStatement = new ImpalaInsertStatement();
 
+        if (lexer.token() == Token.UPSERT || lexer.identifierEquals("UPSERT")) {
+            lexer.nextToken();
+            insertStatement.setUpsert(true);
+        }
+
+        parseInsert0(insertStatement);
+        return insertStatement;
+    }
     @Override
     protected void parseInsert0(SQLInsertInto insertStatement, boolean acceptSubQuery) {
         ImpalaInsertStatement insert = (ImpalaInsertStatement) insertStatement;
